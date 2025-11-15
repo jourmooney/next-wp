@@ -13,6 +13,7 @@ import { siteConfig } from "@/site.config";
 
 import Link from "next/link";
 import Balancer from "react-wrap-balancer";
+import { notFound } from "next/navigation";
 
 import type { Metadata } from "next";
 
@@ -71,6 +72,11 @@ export default async function Page({
 }) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
+
+  if (!post) {
+    notFound();
+  }
+
   const featuredMedia = post.featured_media
     ? await getFeaturedMediaById(post.featured_media)
     : null;
@@ -80,7 +86,9 @@ export default async function Page({
     day: "numeric",
     year: "numeric",
   });
-  const category = await getCategoryById(post.categories[0]);
+  const category = post.categories?.[0]
+    ? await getCategoryById(post.categories[0])
+    : null;
 
   return (
     <Section>
@@ -103,15 +111,17 @@ export default async function Page({
               )}
             </h5>
 
-            <Link
-              href={`/posts/?category=${category.id}`}
-              className={cn(
-                badgeVariants({ variant: "outline" }),
-                "!no-underline"
-              )}
-            >
-              {category.name}
-            </Link>
+            {category && (
+              <Link
+                href={`/posts/?category=${category.id}`}
+                className={cn(
+                  badgeVariants({ variant: "outline" }),
+                  "!no-underline"
+                )}
+              >
+                {category.name}
+              </Link>
+            )}
           </div>
           {featuredMedia?.source_url && (
             <div className="h-96 my-12 md:h-[500px] overflow-hidden flex items-center justify-center border rounded-lg bg-accent/25">

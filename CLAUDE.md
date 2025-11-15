@@ -3,10 +3,10 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Build Commands
-- `npm run dev` - Start development server with turbo mode
-- `npm run build` - Build for production
-- `npm run start` - Start production server  
-- `npm run lint` - Run ESLint to check code quality
+- `pnpm run dev` - Start development server with turbo mode
+- `pnpm run build` - Build for production
+- `pnpm run start` - Start production server  
+- `pnpm run lint` - Run ESLint to check code quality
 
 ## Architecture Overview
 
