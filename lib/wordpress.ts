@@ -223,9 +223,24 @@ export async function getPostById(id: number): Promise<Post> {
 }
 
 export async function getPostBySlug(slug: string): Promise<Post> {
-  return wordpressFetch<Post[]>("/wp-json/wp/v2/posts", { slug }).then(
-    (posts) => posts[0]
+  // WordPress API has issues with URL-encoded slugs for non-Latin characters
+  // Fetch all posts and filter client-side
+  const decodedSlug = decodeURIComponent(slug);
+
+  const allPosts = await wordpressFetch<Post[]>("/wp-json/wp/v2/posts", {
+    per_page: 100,
+    _embed: true
+  });
+
+  // Try case-insensitive matching for URL-encoded slugs
+  const post = allPosts.find(p =>
+    p.slug === decodedSlug ||
+    p.slug === slug ||
+    p.slug.toLowerCase() === slug.toLowerCase() ||
+    p.slug.toLowerCase() === decodedSlug.toLowerCase()
   );
+
+  return post as Post;
 }
 
 export async function getAllCategories(): Promise<Category[]> {
@@ -279,9 +294,14 @@ export async function getPageById(id: number): Promise<Page> {
 }
 
 export async function getPageBySlug(slug: string): Promise<Page> {
-  return wordpressFetch<Page[]>("/wp-json/wp/v2/pages", { slug }).then(
-    (pages) => pages[0]
-  );
+  // WordPress API has issues with URL-encoded slugs for non-Latin characters
+  // Fetch all pages and filter client-side
+  const decodedSlug = decodeURIComponent(slug);
+
+  const allPages = await wordpressFetch<Page[]>("/wp-json/wp/v2/pages", { per_page: 100 });
+  const page = allPages.find(p => p.slug === decodedSlug);
+
+  return page as Page;
 }
 
 export async function getAllAuthors(): Promise<Author[]> {
