@@ -1,30 +1,32 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
+import { useSearchQuery } from "@/hooks/useSearchQuery";
 
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { useDebouncedCallback } from "use-debounce";
+interface SearchInputProps {
+  defaultValue?: string;
+  placeholder?: string;
+}
 
-export function SearchInput({ defaultValue }: { defaultValue?: string }) {
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
-
-  const handleSearch = useDebouncedCallback((term: string) => {
-    const params = new URLSearchParams(searchParams);
-    if (term) {
-      params.set("search", term);
-    } else {
-      params.delete("search");
-    }
-    replace(`${pathname}?${params.toString()}`);
-  }, 300);
+/**
+ * SearchInput component
+ * Provides debounced search functionality with URL state management
+ *
+ * Separated concerns:
+ * - UI: Input rendering
+ * - Business logic: Delegated to useSearchQuery hook
+ */
+export function SearchInput({
+  defaultValue,
+  placeholder = "Search posts...",
+}: SearchInputProps) {
+  const { handleSearch } = useSearchQuery();
 
   return (
     <Input
       type="text"
       name="search"
-      placeholder="Search posts..."
+      placeholder={placeholder}
       defaultValue={defaultValue}
       onChange={(e) => handleSearch(e.target.value)}
     />

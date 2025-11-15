@@ -23,6 +23,7 @@ import { FilterPosts } from "@/components/posts/filter";
 import { SearchInput } from "@/components/posts/search-input";
 
 import type { Metadata } from "next";
+import { PAGINATION } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Blog Posts",
@@ -30,6 +31,8 @@ export const metadata: Metadata = {
 };
 
 export const dynamic = "auto";
+// Note: Next.js requires literal values for revalidate config
+// See CACHE.POSTS_PAGE_REVALIDATE in lib/constants.ts
 export const revalidate = 600;
 
 export default async function Page({
@@ -48,7 +51,7 @@ export default async function Page({
 
   // Handle pagination
   const page = pageParam ? parseInt(pageParam, 10) : 1;
-  const postsPerPage = 9;
+  const postsPerPage = PAGINATION.POSTS_PER_PAGE;
 
   // Fetch data based on search parameters using efficient pagination
   const [postsResponse, authors, tags, categories] = await Promise.all([
